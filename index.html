@@ -15,50 +15,55 @@
        
         <div class="left">
             
-            <p>This is from left</p>
-            <button v-on:click="showCheckout">
-                {{cartItemCount}}
-                Checkout
-            </button>
-            <div v-if="showProducts">
-                <div class="sorting">
-                    <label>Search : 
-                    <input type="text" id="search" v-model="searchBar">
-                </label>
-                <br>
-                    <label for="sort">Sort By: </label>
-                    <select name="choices" id="sort">
-                        <option value="subjects">Subjects</option>
-                        <option value="location">Location</option>
-                        <option value="prices">Prices</option>
-                    </select>
-                    <br>
-                    <label for="ascending">Ascending
-                    <input type="radio" id="ascending" value="ascending" name="order">
+            
+                <button v-on:click="showCheckout">
+                    {{cartItemCount}}
+                    Checkout
+                </button>
+                <div v-if="showProducts">
+                    <div class="sorting">
+                        <label>Search : 
+                        <input type="text" id="search" v-model="searchBar" placeholder="Search Activities">
                     </label>
                     <br>
-                    <label for="descending">Descending
-                    <input type="radio" id="descending" value="descending" name="order">
-                    </label>
-                    
+                        <label for="sort">Sort By: </label>
+                        <select name="choices" id="sort" v-model="selected">
+                            <option value="subjects" >Subjects</option>
+                            <option value="location">Location</option>
+                            <option value="prices">Prices</option>
+                        </select>
+                        <br>
+                        <label for="ascending">Ascending
+                        <input type="radio" id="ascending" value="ascending" name="order">
+                        </label>
+                        <br>
+                        <label for="descending">Descending
+                        <input type="radio" id="descending" value="descending" name="order">
+                        </label>
+                        
 
-                </div>
+                    </div>
             </div>
             <div v-else>
-                Hello
+                <label>Name: <input type="text" v-model="checkoutName"></label>
+                <br>
+                <label>Phone Number: <input type="number" v-model="checkoutNumber"></label>
+                <br>
+                <button v-on:click="submitCheckout">Submit</button>
             </div>
+        
         </div>
             <div class="middle">
                 <div v-if="showProducts" id="ifStatement">
-                    <ul v-for="(active, index) in activity" :key="index">
+                    <ul v-for="active in filteredActivities" :key="active.id">
                         <li>
                             <img v-bind:src="active.image">
                         </li>
-                        <li>{{active.id}}</li>
-                        <li>{{active.subject}}</li>
-                        <li>{{active.spaces- cartItemCount}}</li>
-                        <li>{{active.location}}</li>
-                        <li>${{active.price}}</li>
+                        <li>Subject: {{active.subject}}</li>
+                        <li>Location: {{active.location}}</li>
+                        <li>Price:${{active.price}}</li>
+                        <li>Availability: {{active.spaces- cartItemCount}}</li>
+                                                
                         <li>
                             <button v-on:click="addToCart(active)" >Add to Cart</button>
                         </li>
@@ -70,11 +75,10 @@
                    
                     <ul v-for="(active,index) in cart" :key="index">
                         <li><img v-bind:src="active.image"></li>
-                        <li>{{active.id}}</li>
-                        <li>{{active.subject}}</li>
-                        <li>{{active.spaces}}</li>
-                        <li>{{active.location}}</li>
-                        <li>${{active.price}}</li>
+                        <li>Subject: {{active.subject}}</li>
+                        <li>Location: {{active.location}}</li>
+                        <li>Price:${{active.price}}</li>
+                        <li>Availability: {{active.spaces- cartItemCount}}</li>
 
 
                         <button v-on:click="removeFromCart(index)">Remove from Cart</button>
@@ -85,28 +89,25 @@
                 </div>
                 
             </div>
-            <div class="right">
-                <div v-if="showProducts">
-                    Hello
-                </div>
-                <div v-else>
-                Hi
-                </div>
-            </div>
+            
         
     </div>
 
     <footer>
-        This is from footer
+       
     </footer>
     <script type="text/javascript">
+        
         let webstore = new Vue({
             el: '.main',
             data: {
                 sitename: "This is a test for vue",
                 showProducts: true,
                 activity: afterSchool,
+                
                 cart: [],
+                searchBar:'',
+                selected:'',
             },
             methods: {
                 addToCart(active) {
@@ -132,7 +133,19 @@
                 cartItemCount: function (index) {
                     return this.cart.length;
                 },
-            }
+                filteredActivities:function(){
+                    
+                    return this.activity.filter((active)=>{
+                        return active.subject.toLowerCase().includes(this.searchBar);
+                        
+                    });
+                    
+                    
+                
+            },
+        }
+            
+            
         });
     </script>
     
