@@ -50,10 +50,11 @@
                 </div>
             </div>
             <div v-else>
-                <label>Name: <input type="text" v-model="userName"placeholder="Name"></label><br>
-                <label>Phone:<input type="text" v-model="userPhone"placeholder="Phone Number"></label>
+                <label>Name: <input type="text" v-model="userName"placeholder="Name" @input = "filterNameInput"></label><br>
+                <label>Phone:<input type="text" v-model="userPhone"placeholder="Phone Number" @input="filterPhoneInput"></label>
                 <br>
-                <button v-on:click="submitDetails">Submit</button>
+                <button :disabled="!isFormValid" v-on:click="submitDetails">Submit</button>
+                
             </div>
         </div>
             <div class="middle">
@@ -114,6 +115,10 @@
                 searchBar:'',
                 userName:'',
                 userPhone:'',
+                errors:{
+                    name:'',
+                    phone:''
+                },
                 sortBy:'subjects',
                 orderBy:'ascending',
                 
@@ -160,13 +165,19 @@
                     }
                     return count;
                 },
+
                 submitDetails() {
-                    if (!this.userName || !this.userPhone) {
-                        alert("Please enter both name and phone number.");
-                        return;
-                    }
-                    console.log("User Details Submitted:", this.userName, this.userPhone);
-                }
+                   if (!this.userName || !this.userPhone){
+                    alert("Please enter complete details")
+                   }
+                   else alert("Thank you for your oder")
+                },
+                filterPhoneInput() {
+                    this.userPhone = this.userPhone.replace(/[^0-9]/g, '');
+                },
+                filterNameInput() {
+                this.userName = this.userName.replace(/[^a-zA-Z\s]/g, '');
+                },
                 
             },
             computed:{
@@ -193,27 +204,19 @@
                     } else if (this.sortBy === "prices") {
                         return a.price - b.price;
                     }
-                    else if (this.sortBy === "availability") {
-                        availabilityA = a.spaces - this.cartCount(a);
-                        availabilityB = b.spaces - this.cartCount(b);
-                        return availabilityA - availabilityB;;
-                    }
+                   
         });
-
                     // Handle ascending/descending order
                      if (this.orderBy === "descending") {
                     sorted.reverse();
         }
     }
-                
-
-                    
-                    
-                   
-
                     return sorted;
                                     
             },
+            isFormValid() {
+            return this.userName.trim() !== '' && this.userPhone.trim() !== '' && this.userPhone.length >= 5;
+            }
             
         }
         });
