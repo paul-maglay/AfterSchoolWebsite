@@ -18,7 +18,14 @@
                 
             </div>
             <div class="middle">
-                <p>{{sitename}}</p>
+                <ul v-for="activity in activity">
+                    <li><img v-bind:src="activity.image"></li>
+                    <li>{{activity.id}}</li>
+                    <li>{{activity.subject}}</li>
+                    <li>{{activity.spaces}}</li>
+                    <li><button>Add to Cart</button><button>Remove from Cart</button></li>
+                </ul>
+
                 
                 
             </div>
@@ -38,7 +45,12 @@
             data:{
                 sitename:"This is a test for vue",
                 showProducts:true,
-                activity:activities,
+                activity:afterSchool,
+
+                
+                   
+
+                
 
 
 
