@@ -4,6 +4,9 @@
     <script src="https://cdn.jsdelivr.net/npm/vue@2.7.16/dist/vue.js"></script>
     <link rel="stylesheet" href="design.css">
     <script src="activities.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Protest+Strike&family=Roboto+Slab:wght@100..900&display=swap" rel="stylesheet">
 </head>
 <body>
     
@@ -16,42 +19,41 @@
         <div class="left">
             
             
-                <button v-on:click="showCheckout">
-                    {{cartItemCount}}
-                    Checkout
-                </button>
-                <div v-if="showProducts">
-                    <div class="sorting">
-                        <label>Search : 
-                        <input type="text" id="search" v-model="searchBar" placeholder="Search Activities">
+            <button v-on:click="showCheckout":disabled ="cartItemCount === 0">
+                {{cartItemCount}}
+                Checkout
+            </button>
+            
+            <div v-if="showProducts">
+                <div class="sorting">
+                    <label>Search : 
+                    <input type="text" id="search" v-model="searchBar" placeholder="Search Activities">
+                </label>
+                <br>
+                    <label for="sort">Sort By: </label>
+                    <select name="choices" id="sort" >
+                        <option value="subjects" >Subjects</option>
+                        <option value="location">Location</option>
+                        <option value="prices">Prices</option>
+                    </select>
+                    <br>
+                    <label for="ascending">Ascending
+                    <input type="radio" id="ascending" value="ascending" name="order">
                     </label>
                     <br>
-                        <label for="sort">Sort By: </label>
-                        <select name="choices" id="sort" v-model="selected">
-                            <option value="subjects" >Subjects</option>
-                            <option value="location">Location</option>
-                            <option value="prices">Prices</option>
-                        </select>
-                        <br>
-                        <label for="ascending">Ascending
-                        <input type="radio" id="ascending" value="ascending" name="order">
-                        </label>
-                        <br>
-                        <label for="descending">Descending
-                        <input type="radio" id="descending" value="descending" name="order">
-                        </label>
-                        
+                    <label for="descending">Descending
+                    <input type="radio" id="descending" value="descending" name="order">
+                    </label>
+                    
 
-                    </div>
+                </div>
             </div>
             <div v-else>
-                <label>Name: <input type="text" v-model="checkoutName"></label>
+                <label>Name: <input type="text" v-model="userName"placeholder="Name"></label><br>
+                <label>Phone:<input type="text" v-model="userPhone"placeholder="Phone Number"></label>
                 <br>
-                <label>Phone Number: <input type="number" v-model="checkoutNumber"></label>
-                <br>
-                <button v-on:click="submitCheckout">Submit</button>
+                <!--<button v-on:click="submitDetails">Submit</button>-->
             </div>
-        
         </div>
             <div class="middle">
                 <div v-if="showProducts" id="ifStatement">
@@ -59,10 +61,11 @@
                         <li>
                             <img v-bind:src="active.image">
                         </li>
+                    
                         <li>Subject: {{active.subject}}</li>
                         <li>Location: {{active.location}}</li>
                         <li>Price:${{active.price}}</li>
-                        <li>Availability: {{active.spaces- cartItemCount}}</li>
+                        <li>Availability: {{active.spaces- cartCount(active)}}</li>
                                                 
                         <li>
                             <button v-on:click="addToCart(active)" >Add to Cart</button>
@@ -75,49 +78,52 @@
                    
                     <ul v-for="(active,index) in cart" :key="index">
                         <li><img v-bind:src="active.image"></li>
+                        
                         <li>Subject: {{active.subject}}</li>
                         <li>Location: {{active.location}}</li>
                         <li>Price:${{active.price}}</li>
-                        <li>Availability: {{active.spaces- cartItemCount}}</li>
+                                                
+                        <li>
+                        <button v-on:click="removeFromCart(index)" >Remove from Cart</button>
+                        </li>
 
-
-                        <button v-on:click="removeFromCart(index)">Remove from Cart</button>
-
-
+                        
                     </ul>
 
                 </div>
                 
             </div>
             
-        
     </div>
 
     <footer>
-       
+        
     </footer>
     <script type="text/javascript">
-        
         let webstore = new Vue({
             el: '.main',
             data: {
                 sitename: "This is a test for vue",
                 showProducts: true,
                 activity: afterSchool,
-                
                 cart: [],
                 searchBar:'',
-                selected:'',
+                userName:'',
+                userPhone:'',
             },
             methods: {
                 addToCart(active) {
                     this.cart.push(active);
                 },
                 removeFromCart(index) {
+                    console.log("hello");
                     this.cart.splice(index,1);
+                    if (cartItemCount === 0){
+                        this.showProducts = true;
+                    }
                 },
                 showCheckout() {
-                    this.showProducts = this.showProducts ? false : true;
+                    this.showProducts = !this.showProducts;
                 },
                 cartCount(id) {
                     let count = 0;
@@ -128,6 +134,7 @@
                     }
                     return count;
                 },
+                
             },
             computed:{
                 cartItemCount: function (index) {
@@ -136,16 +143,13 @@
                 filteredActivities:function(){
                     
                     return this.activity.filter((active)=>{
-                        return active.subject.toLowerCase().includes(this.searchBar);
+                        return active.subject.toLowerCase().includes(this.searchBar) ||
+                        active.location.toLowerCase().includes(this.searchBar);
                         
                     });
-                    
-                    
-                
             },
+            
         }
-            
-            
         });
     </script>
     
