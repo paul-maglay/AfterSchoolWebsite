@@ -31,18 +31,19 @@
                 </label>
                 <br>
                     <label for="sort">Sort By: </label>
-                    <select name="choices" id="sort" >
+                    <select name="choices" id="sort" v-model="sortBy">
                         <option value="subjects" >Subjects</option>
                         <option value="location">Location</option>
                         <option value="prices">Prices</option>
+                        <option value="availability">Availability</option>
                     </select>
                     <br>
                     <label for="ascending">Ascending
-                    <input type="radio" id="ascending" value="ascending" name="order">
+                    <input type="radio" id="ascending" value="ascending" name="order" checked v-model="orderBy">
                     </label>
                     <br>
                     <label for="descending">Descending
-                    <input type="radio" id="descending" value="descending" name="order">
+                    <input type="radio" id="descending" value="descending" name="order" v-model="orderBy">
                     </label>
                     
 
@@ -52,7 +53,7 @@
                 <label>Name: <input type="text" v-model="userName"placeholder="Name"></label><br>
                 <label>Phone:<input type="text" v-model="userPhone"placeholder="Phone Number"></label>
                 <br>
-                <!--<button v-on:click="submitDetails">Submit</button>-->
+                <button v-on:click="submitDetails">Submit</button>
             </div>
         </div>
             <div class="middle">
@@ -65,10 +66,12 @@
                         <li>Subject: {{active.subject}}</li>
                         <li>Location: {{active.location}}</li>
                         <li>Price:${{active.price}}</li>
-                        <li>Availability: {{active.spaces- cartCount(active)}}</li>
+                        <li>Availability: {{active.spaces- cartCount(active.id)}}</li>
                                                 
                         <li>
-                            <button v-on:click="addToCart(active)" >Add to Cart</button>
+                            <button v-on:click="addToCart(active)" v-if="canAddToCart(active)" >Add to Cart</button>
+                            <button v-else :disabled="!canAddToCart(active)">Add to Cart</button>
+                            
                         </li>
                     </ul>
 
@@ -105,11 +108,15 @@
             data: {
                 sitename: "This is a test for vue",
                 showProducts: true,
+                filter:true,
                 activity: [],
                 cart: [],
                 searchBar:'',
                 userName:'',
                 userPhone:'',
+                sortBy:'subjects',
+                orderBy:'ascending',
+                
             },
             created: function () {
                 console.log('requesting data from server ...')
@@ -131,6 +138,9 @@
                     this.cart.push(active);
                     
                 },
+                canAddToCart(active) {
+                    return active.spaces > this.cartCount(active.id);
+                },
                 removeFromCart(index) {
                     
                     this.cart.splice(index,1);
@@ -144,25 +154,65 @@
                 cartCount(id) {
                     let count = 0;
                     for (let i = 0; i < this.cart.length; i++) {
-                        if (this.cart[i] === id) {
+                        if (this.cart[i].id === id) {
                             count++;
                         }
                     }
                     return count;
                 },
+                submitDetails() {
+                    if (!this.userName || !this.userPhone) {
+                        alert("Please enter both name and phone number.");
+                        return;
+                    }
+                    console.log("User Details Submitted:", this.userName, this.userPhone);
+                }
                 
             },
             computed:{
                 cartItemCount: function (index) {
                     return this.cart.length;
                 },
-                filteredActivities:function(){
-                    
-                    return this.activity.filter((active)=>{
+                filteredActivities(){
+                    let sorted = this.activity;
+
+                    if (this.searchBar != '' ){
+                        return this.activity.filter((active)=>{
                         return active.subject.toLowerCase().includes(this.searchBar) ||
                         active.location.toLowerCase().includes(this.searchBar);
                         
                     });
+                    }
+                    
+                    if (this.sortBy) {
+                                sorted.sort((a, b) => {
+                    if (this.sortBy === "subjects") {
+                        return a.subject.localeCompare(b.subject);
+                    } else if (this.sortBy === "location") {
+                        return a.location.localeCompare(b.location);
+                    } else if (this.sortBy === "prices") {
+                        return a.price - b.price;
+                    }
+                    else if (this.sortBy === "availability") {
+                        availabilityA = a.spaces - this.cartCount(a);
+                        availabilityB = b.spaces - this.cartCount(b);
+                        return availabilityA - availabilityB;;
+                    }
+        });
+
+                    // Handle ascending/descending order
+                     if (this.orderBy === "descending") {
+                    sorted.reverse();
+        }
+    }
+                
+
+                    
+                    
+                   
+
+                    return sorted;
+                                    
             },
             
         }
