@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<head>
+    <title>After School Activities</title>
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.7.16/dist/vue.js"></script>
+    <link rel="stylesheet" href="design.css">
+    <script src="activities.js"></script>
+</head>
+<body>
+    
+    <header>
+        This is from header
+    </header>
+    
+    <div class="main">
+       
+            <div class="left">
+                This is from left
+                
+            </div>
+            <div class="middle">
+                <p>{{sitename}}</p>
+                
+                
+            </div>
+            <div class="right">
+                This is from right
+            </div>
+        
+    </div>
+
+    <footer>
+        This is from footer
+    </footer>
+    <script type="text/javascript">
+        let webstore = new Vue({
+            el:'.main',
+            
+            data:{
+                sitename:"This is a test for vue",
+                showProducts:true,
+                activity:activities,
+
+
+
+                cart: [],
+
+            },
+            
+            methods:{
+                addToCart(activity){
+                    this.cart.push(activity.id);
+                },
+                removeFromCart:function(){
+                    this.cart.pop(this.activity.id);
+                },
+                submitForm:function(){
+                    alert('Order Submitted!');
+                },
+                showCheckout(){
+                    this.showProducts = this.showProducts ? false:true;
+                },
+                canAddToCart(activity){
+                    return activity.spaces > this.cartCount(activity.id);
+                },
+                cartCount(id){
+                    let count = 0;
+                    for(let i = 0; i < this.cart.length;i++){
+                        if(this.cart[i] === id){
+                            cart++
+                        }
+                    }
+                }
+
+
+            },
+            computed:{
+                cartItemCount:function(){
+                    return this.cart.legnth ||"";
+                },
+
+                spaceLeft(){
+                    return this.activity.spaces - this.cartItemCount;
+                }
+                
+            }
+            
+        })
+
+
+
+    </script>
+    
+
+
+
+</body>
+
+
+</html>
