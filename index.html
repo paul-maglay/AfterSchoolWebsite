@@ -8,29 +8,90 @@
 <body>
     
     <header>
-        This is from header
+        <p>Afterschool Acitivities</p>
     </header>
     
     <div class="main">
        
-            <div class="left">
-                This is from left
-                
-            </div>
-            <div class="middle">
-                <ul v-for="activity in activity">
-                    <li><img v-bind:src="activity.image"></li>
-                    <li>{{activity.id}}</li>
-                    <li>{{activity.subject}}</li>
-                    <li>{{activity.spaces}}</li>
-                    <li><button>Add to Cart</button><button>Remove from Cart</button></li>
-                </ul>
+        <div class="left">
+            
+            <p>This is from left</p>
+            <button v-on:click="showCheckout">
+                {{cartItemCount}}
+                Checkout
+            </button>
+            <div v-if="showProducts">
+                <div class="sorting">
+                    <label>Search : 
+                    <input type="text" id="search" v-model="searchBar">
+                </label>
+                <br>
+                    <label for="sort">Sort By: </label>
+                    <select name="choices" id="sort">
+                        <option value="subjects">Subjects</option>
+                        <option value="location">Location</option>
+                        <option value="prices">Prices</option>
+                    </select>
+                    <br>
+                    <label for="ascending">Ascending
+                    <input type="radio" id="ascending" value="ascending" name="order">
+                    </label>
+                    <br>
+                    <label for="descending">Descending
+                    <input type="radio" id="descending" value="descending" name="order">
+                    </label>
+                    
 
-                
+                </div>
+            </div>
+            <div v-else>
+                Hello
+            </div>
+        </div>
+            <div class="middle">
+                <div v-if="showProducts" id="ifStatement">
+                    <ul v-for="(active, index) in activity" :key="index">
+                        <li>
+                            <img v-bind:src="active.image">
+                        </li>
+                        <li>{{active.id}}</li>
+                        <li>{{active.subject}}</li>
+                        <li>{{active.spaces- cartItemCount}}</li>
+                        <li>{{active.location}}</li>
+                        <li>${{active.price}}</li>
+                        <li>
+                            <button v-on:click="addToCart(active)" >Add to Cart</button>
+                        </li>
+                    </ul>
+
+
+                </div>
+                <div v-else id="ifStatement">
+                   
+                    <ul v-for="(active,index) in cart" :key="index">
+                        <li><img v-bind:src="active.image"></li>
+                        <li>{{active.id}}</li>
+                        <li>{{active.subject}}</li>
+                        <li>{{active.spaces}}</li>
+                        <li>{{active.location}}</li>
+                        <li>${{active.price}}</li>
+
+
+                        <button v-on:click="removeFromCart(index)">Remove from Cart</button>
+
+
+                    </ul>
+
+                </div>
                 
             </div>
             <div class="right">
-                This is from right
+                <div v-if="showProducts">
+                    Hello
+                </div>
+                <div v-else>
+                Hi
+                </div>
             </div>
         
     </div>
@@ -40,66 +101,39 @@
     </footer>
     <script type="text/javascript">
         let webstore = new Vue({
-            el:'.main',
-            
-            data:{
-                sitename:"This is a test for vue",
-                showProducts:true,
-                activity:afterSchool,
-
-                
-                   
-
-                
-
-
-
+            el: '.main',
+            data: {
+                sitename: "This is a test for vue",
+                showProducts: true,
+                activity: afterSchool,
                 cart: [],
-
             },
-            
-            methods:{
-                addToCart(activity){
-                    this.cart.push(activity.id);
+            methods: {
+                addToCart(active) {
+                    this.cart.push(active);
                 },
-                removeFromCart:function(){
-                    this.cart.pop(this.activity.id);
+                removeFromCart(index) {
+                    this.cart.splice(index,1);
                 },
-                submitForm:function(){
-                    alert('Order Submitted!');
+                showCheckout() {
+                    this.showProducts = this.showProducts ? false : true;
                 },
-                showCheckout(){
-                    this.showProducts = this.showProducts ? false:true;
-                },
-                canAddToCart(activity){
-                    return activity.spaces > this.cartCount(activity.id);
-                },
-                cartCount(id){
+                cartCount(id) {
                     let count = 0;
-                    for(let i = 0; i < this.cart.length;i++){
-                        if(this.cart[i] === id){
-                            cart++
+                    for (let i = 0; i < this.cart.length; i++) {
+                        if (this.cart[i] === id) {
+                            count++;
                         }
                     }
-                }
-
-
+                    return count;
+                },
             },
             computed:{
-                cartItemCount:function(){
-                    return this.cart.legnth ||"";
+                cartItemCount: function (index) {
+                    return this.cart.length;
                 },
-
-                spaceLeft(){
-                    return this.activity.spaces - this.cartItemCount;
-                }
-                
             }
-            
-        })
-
-
-
+        });
     </script>
     
 
