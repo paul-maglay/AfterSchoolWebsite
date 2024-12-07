@@ -113,8 +113,10 @@
                 activity: [],
                 cart: [],
                 searchBar:'',
+                
                 userName:'',
                 userPhone:'',
+                
                 errors:{
                     name:'',
                     phone:''
@@ -166,12 +168,39 @@
                     return count;
                 },
 
-                submitDetails() {
-                   if (!this.userName || !this.userPhone){
-                    alert("Please enter complete details")
-                   }
-                   else alert("Thank you for your oder")
+                async submitDetails(){
+                    const orderData = {
+                        userName: this.userName,
+                        userPhone: this.userPhone
+                    }
+                    const response = await fetch('http://localhost:3000/collection/orders',{
+                        method :'POST',
+                        headers:{
+                            'Content-Type' :'application/json'
+                        },
+                        body: JSON.stringify(orderData)
+                    });
+                    if (response.ok){
+                        const result = await response.json();
+                        alert("Order Submitted successfully!");
+                        console.log("Order submission result: ", result)
+
+                        this.userName = '';
+                        this.userPhone = '';
+                        this.cart = [];
+                        this.showProducts = true;
+
+                    } else {
+                        const error = await response.json();
+                        console.error("Error submitting order: ", error);
+                        alert("Failed to submit order")
+                    }
+
+
+
                 },
+
+                
                 filterPhoneInput() {
                     this.userPhone = this.userPhone.replace(/[^0-9]/g, '');
                 },
