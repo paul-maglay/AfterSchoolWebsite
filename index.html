@@ -105,20 +105,36 @@
             data: {
                 sitename: "This is a test for vue",
                 showProducts: true,
-                activity: afterSchool,
+                activity: [],
                 cart: [],
                 searchBar:'',
                 userName:'',
                 userPhone:'',
             },
+            created: function () {
+                console.log('requesting data from server ...')
+                
+                fetch('http://localhost:3000/collection/lessons').then(
+                    function (response) {
+                        response.json().then(
+                            function (json) {
+                                // save the returned JSON object to
+                                // 'product' data property
+                                webstore.activity = json;
+                                console.log(json);
+                            });
+                    }
+                )
+            },
             methods: {
                 addToCart(active) {
                     this.cart.push(active);
+                    
                 },
                 removeFromCart(index) {
-                    console.log("hello");
+                    
                     this.cart.splice(index,1);
-                    if (cartItemCount === 0){
+                    if (this.cart.length == 0){
                         this.showProducts = true;
                     }
                 },
