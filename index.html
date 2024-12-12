@@ -133,7 +133,17 @@
                     }
                 )
             },
+            watch: {
+                // Watcher for searchBar - tracks changes made in the searchBar
+                searchBar(newQuery, oldQuery) {
+                    this.logSearchQuery(newQuery, oldQuery);
+                }
+            },
             methods: {
+                logSearchQuery(newQuery, oldQuery) {
+                    const timestamp = new Date().toISOString();
+                    console.log(`[${timestamp}] Search query changed from '${oldQuery}' to '${newQuery}'`);
+                },
                 addToCart(active) {
                     this.cart.push(active);
                     
@@ -160,6 +170,7 @@
                     }
                     return count;
                 },
+                
 
                 async submitDetails(){
                     const orderData = {
@@ -167,17 +178,16 @@
                         userPhone: this.userPhone,
                         cart:this.cart
                     }
-                    const response = await fetch('https://afterschoolwebsite-backend.onrender.com/collection/orders',{
-                        method :'POST',
-                        headers:{
-                            'Content-Type' :'application/json'
-                        },
-                        body: JSON.stringify(orderData)
-                    });
+                    
                     if (response.ok){
                         const result = await response.json();
                         alert("Order Submitted successfully!");
                         console.log("Order submission result: ", result)
+
+                        await this.cart.forEach(async (id) => {
+                            this.products.find(p => p.id === id).availableInventory--;
+                            await this.updateProduct(this.products.find(p => p.id === id));
+                        })
 
                         this.userName = '';
                         this.userPhone = '';
