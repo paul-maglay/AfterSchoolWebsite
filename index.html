@@ -133,17 +133,8 @@
                     }
                 )
             },
-            watch: {
-                // Watcher for searchBar - tracks changes made in the searchBar
-                searchBar(newQuery, oldQuery) {
-                    this.logSearchQuery(newQuery, oldQuery);
-                }
-            },
+            
             methods: {
-                logSearchQuery(newQuery, oldQuery) {
-                    const timestamp = new Date().toISOString();
-                    console.log(`[${timestamp}] Search query changed from '${oldQuery}' to '${newQuery}'`);
-                },
                 addToCart(active) {
                     this.cart.push(active);
                     
